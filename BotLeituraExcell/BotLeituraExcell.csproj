@@ -87,16 +87,20 @@
   <ItemGroup>
     <Compile Include="Acess\AcessDBRepository.cs" />
     <Compile Include="Context\InformacoesPlanilhaContext.cs" />
+    <Compile Include="Data\Atribuido.cs" />
     <Compile Include="Data\Categoria.cs" />
     <Compile Include="Data\ClassChamadoFinal.cs" />
     <Compile Include="Data\Departamento.cs" />
     <Compile Include="Data\GrupoExecutor.cs" />
     <Compile Include="Data\Origem.cs" />
+    <Compile Include="Data\Prazo.cs" />
+    <Compile Include="Data\Problemas.cs" />
     <Compile Include="Data\Resumo.cs" />
     <Compile Include="Data\Incidentes.cs" />
     <Compile Include="Data\Localidade.cs" />
     <Compile Include="Data\Responsavel.cs" />
     <Compile Include="Data\Severidade.cs" />
+    <Compile Include="Data\Solicitacoes.cs" />
     <Compile Include="Data\Status.cs" />
     <Compile Include="Data\UsuarioFinal.cs" />
     <Compile Include="Data\Violado.cs" />

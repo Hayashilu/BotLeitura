@@ -19,7 +19,7 @@ namespace BotLeituraExcell
                 Console.ReadKey();
             }
             catch(Exception ex)
-            {
+             {
                 Console.WriteLine("Ocorreu um erro durante a execução!");
                 Console.WriteLine("Erro : " + ex.Message);
                 Console.ReadKey();

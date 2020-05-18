@@ -2,6 +2,7 @@
 using BotLeituraExcell.Data;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,17 +12,60 @@ namespace BotLeituraExcell.Acess
     public class AcessDBRepository
     {
 
-        public void adcTabelaSqlComand(List<Incidentes> informacoesPlanilhas)
+        public void adcTabelaIncidentesSqlComand(List<Incidentes> informacoesPlanilhas)
         {
             using (var db = new InformacoesPlanilhaContext())
             {
-                //foreach (var item in informacoesPlanilhas)
-                //{
-                db.InformacoesPlanilha.AddRange(informacoesPlanilhas);
-                Console.WriteLine("Foram adicionados o total de " + informacoesPlanilhas.Count() + " linhas na database");
+                //Remove itens que já existem de tal data
+                verificaExistenciaIncidenteDataReferencia(informacoesPlanilhas);
+                //Add novos itens
+                db.Incidentes.AddRange(informacoesPlanilhas);
+                Console.WriteLine("Foram adicionados o total de " + informacoesPlanilhas.Count() + " linhas na Tabela Incidentes");
                 db.SaveChanges();
-                //}
+            }
+        }
 
+        public void adcTabelaProblemasSqlComand(List<Problemas> informacoesPlanilhas)
+        {
+            using (var db = new InformacoesPlanilhaContext())
+            {
+                //Remove itens que já existem de tal data
+                verificaExistenciaProblemaDataReferencia(informacoesPlanilhas);
+                //Add novos itens
+                db.Problemas.AddRange(informacoesPlanilhas);
+                Console.WriteLine("Foram adicionados o total de " + informacoesPlanilhas.Count() + " linhas na Tabela Problemas");
+                db.SaveChanges();
+            }
+        }
+
+        public void adcTabelaSolicitacoesSqlComand(List<Solicitacoes> informacoesPlanilhas)
+        {
+            using (var db = new InformacoesPlanilhaContext())
+            {
+                //Remove itens que já existem de tal data
+                verificaExistenciaSolicitacaoDataReferencia(informacoesPlanilhas);
+                //Add novos itens
+                db.Solicitacoes.AddRange(informacoesPlanilhas);
+                Console.WriteLine("Foram adicionados o total de " + informacoesPlanilhas.Count() + " linhas na Tabela Solicitações");
+                db.SaveChanges();
+            }
+        }
+
+        public int modPrazo(string coluna)
+        {
+            using (var db = new InformacoesPlanilhaContext())
+            {
+                var busca = db.Prazos.Where(x => x.numeroPrazo == coluna).ToList();
+
+                if (busca.Count() == 0)
+                {
+                    Prazo construtor = new Prazo() { numeroPrazo = coluna };
+                    db.Prazos.Add(construtor);
+                    db.SaveChanges();
+                    busca = db.Prazos.Where(x => x.numeroPrazo == coluna).ToList();
+                }
+
+                return busca[0].idPrazo;
             }
         }
 
@@ -69,20 +113,20 @@ namespace BotLeituraExcell.Acess
 
                 if (severidadeBusca.Count() == 0)
                 {
-                    Severidade severidade = new Severidade() { infoSeveridade = colunaSeveridade , peso = 0 };
-                    if (colunaSeveridade == "2")
+                    Severidade severidade = new Severidade() { infoSeveridade = colunaSeveridade, peso = 0 };
+                    if (colunaSeveridade.Contains("2"))
                     {
                         severidade.peso = 1;
                     }
-                    else if (colunaSeveridade == "3")
+                    else if (colunaSeveridade.Contains("3"))
                     {
                         severidade.peso = 3;
                     }
-                    else if (colunaSeveridade == "4")
+                    else if (colunaSeveridade.Contains("4"))
                     {
                         severidade.peso = 5;
                     }
-                    else if (colunaSeveridade == "5")
+                    else if (colunaSeveridade.Contains("5"))
                     {
                         severidade.peso = 20;
                     }
@@ -132,6 +176,24 @@ namespace BotLeituraExcell.Acess
                 }
 
                 return responsavelBusca[0];
+            }
+        }
+
+        public Atribuido modAtribuido(string colunaAtribuido)
+        {
+            using (var db = new InformacoesPlanilhaContext())
+            {
+                List<Atribuido> atribuidoBusca = db.Atribuidos.Where(x => x.infoAtribuido.Contains(colunaAtribuido)).ToList();
+
+                if (atribuidoBusca.Count() == 0)
+                {
+                    Atribuido Atribuido = new Atribuido() { infoAtribuido = colunaAtribuido };
+                    db.Atribuidos.Add(Atribuido);
+                    db.SaveChanges();
+                    atribuidoBusca = db.Atribuidos.Where(x => x.infoAtribuido.Contains(colunaAtribuido)).ToList();
+                }
+
+                return atribuidoBusca[0];
             }
         }
 
@@ -258,6 +320,69 @@ namespace BotLeituraExcell.Acess
                 }
 
                 return busca[0];
+            }
+        }
+
+        public void verificaExistenciaIncidenteDataReferencia(List<Incidentes> itens)
+        {
+            using (var db = new InformacoesPlanilhaContext())
+            {
+                bool oldValidateOnSaveEnabled = db.Configuration.ValidateOnSaveEnabled;
+                DateTime dataReferencia = itens[0].dataReferencia;
+                var busca = db.Incidentes.Where(x => x.dataReferencia == dataReferencia).ToList();
+
+                if (busca.Count() != 0)
+                {
+                    db.Configuration.ValidateOnSaveEnabled = false;
+                    foreach (var itemIncidente in busca)
+                    {
+                        db.Incidentes.Attach(itemIncidente);
+                        db.Entry(itemIncidente).State = EntityState.Deleted;
+                    }
+                    db.SaveChanges();
+
+                }
+            }
+        }
+
+        public void verificaExistenciaProblemaDataReferencia(List<Problemas> itens)
+        {
+            using (var db = new InformacoesPlanilhaContext())
+            {
+                bool oldValidateOnSaveEnabled = db.Configuration.ValidateOnSaveEnabled;
+                DateTime dataReferencia = itens[0].dataReferencia;
+                var busca = db.Problemas.Where(x => x.dataReferencia == dataReferencia).ToList();
+
+                if (busca.Count() != 0)
+                {
+                    db.Configuration.ValidateOnSaveEnabled = false;
+                    foreach(var itemProblem in busca)
+                    {
+                        db.Problemas.Attach(itemProblem);
+                        db.Entry(itemProblem).State = EntityState.Deleted;
+                    }
+                    db.SaveChanges();
+                }
+            }
+        }
+
+        public void verificaExistenciaSolicitacaoDataReferencia(List<Solicitacoes> itens)
+        {
+            using (var db = new InformacoesPlanilhaContext())
+            {
+                bool oldValidateOnSaveEnabled = db.Configuration.ValidateOnSaveEnabled;
+                DateTime dataReferencia = itens[0].dataReferencia;
+                var busca = db.Solicitacoes.Where(x => x.dataReferencia == dataReferencia).ToList();
+
+                if (busca.Count() != 0)
+                {
+                    foreach (var itemSolicitacao in busca)
+                    {
+                        db.Solicitacoes.Attach(itemSolicitacao);
+                        db.Entry(itemSolicitacao).State = EntityState.Deleted;
+                    }
+                    db.SaveChanges();
+                }
             }
         }
     }

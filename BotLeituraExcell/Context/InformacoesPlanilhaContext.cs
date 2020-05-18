@@ -15,8 +15,9 @@ namespace BotLeituraExcell.Context
         {
         }
 
-        public DbSet<Incidentes> InformacoesPlanilha { get; set; }
-        public DbSet<Resumo> InformacaoResumo { get; set; }
+        public DbSet<Incidentes> Incidentes { get; set; }
+        public DbSet<Problemas> Problemas { get; set; }
+        public DbSet<Solicitacoes> Solicitacoes { get; set; }
         public DbSet<Severidade> Severidade { get; set; }
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<GrupoExecutor> GrupoExecutor { get; set; }
@@ -28,5 +29,7 @@ namespace BotLeituraExcell.Context
         public DbSet<UsuarioFinal> UsuarioFinals { get; set; }
         public DbSet<Departamento> Departamentos { get; set; }
         public DbSet<Origem> Origems { get; set; }
+        public DbSet<Prazo> Prazos { get; set; }
+        public DbSet<Atribuido> Atribuidos { get; set; }
     }
 }

@@ -34,13 +34,18 @@ namespace BotLeituraExcell.Setup
 
         public void lerArquivosExecucaoTotal()
         {
-            List<Incidentes> listaParaAdcTabela = new List<Incidentes>();
-            IEnumerable<FileInfo> informacoesArquivos = execute.verificarPastaTotal();
+            List<Incidentes> listaParaAdcTabelaIncidentes = new List<Incidentes>();
+            List<Problemas> listaParaAdcTabelaProblemas = new List<Problemas>();
+            List<Solicitacoes> listaParaAdcTabelaSolicitacoes = new List<Solicitacoes>();
+
+            string selecao = selecaoTipo();
+            IEnumerable<FileInfo> informacoesArquivos = execute.verificarPastaTotal(selecao);
 
             foreach (var info in informacoesArquivos)
             {
                 Severidade intSeveridade = new Severidade();
                 DateTime mesVerifcAbertura = new DateTime();
+                DateTime mesVerifcFechamento = new DateTime();
                 DateTime mesVerifcResolucao = new DateTime();
                 DateTime dataReferenciaSalva = dataReferenciaAjuste(info.Name);
                 var workbook = new XLWorkbook(info.FullName);
@@ -53,44 +58,141 @@ namespace BotLeituraExcell.Setup
                 {
                     if (dataRow.RowNumber() > 1)
                     {
-                        intSeveridade = repositorio.modSeveridade(dataRow.Cell(3).Value.ToString());
-                        mesVerifcAbertura = ajusteMes(verificaDateTime(dataRow.Cell(11).Value.ToString()).ToShortDateString());
-                        mesVerifcResolucao = ajusteMes(verificaDateTime(dataRow.Cell(15).Value.ToString()).ToShortDateString());
-                        Incidentes infoAdd = new Incidentes()
+                        if (selecao == "1")
                         {
-                            numeroIncidente = dataRow.Cell(1).Value.ToString(),
-                            resumo = dataRow.Cell(2).Value.ToString(),
-                            idSeveridade = intSeveridade.idSeveridade,
-                            idCategoria = repositorio.modCategoria(dataRow.Cell(4).Value.ToString()).idCategoria,
-                            idStatus = repositorio.modStatus(dataRow.Cell(5).Value.ToString()).idStatus,
-                            idGrupoExec = repositorio.modExecutor(dataRow.Cell(6).Value.ToString()).idGrupoExec,
-                            idResponsavel = repositorio.modResponsavel(dataRow.Cell(7).Value.ToString()).idResponsavel,
-                            violacao = verificaDateTime(dataRow.Cell(8).Value.ToString()),
-                            idViolado = repositorio.modViolado(dataRow.Cell(9).Value.ToString()).idViolado,
-                            idLocalidade = repositorio.modLocalidade(dataRow.Cell(10).Value.ToString()).idLocalidade,
-                            dataAbertura = verificaDateTime(dataRow.Cell(11).Value.ToString()),
-                            mesAbertura = mesVerifcAbertura,
-                            ultimaAtualizacao = verificaDateTime(dataRow.Cell(12).Value.ToString()),
-                            retornoChamado = dataRow.Cell(13).Value.ToString(),
-                            idClassChamadoFinal = repositorio.modClassificacaoChamado(dataRow.Cell(14).Value.ToString()).idClassChamadoFinal,
-                            dataResolucao = verificaDateTime(dataRow.Cell(15).Value.ToString()),
-                            mesResolucao = mesVerifcResolucao,
-                            descricao = dataRow.Cell(16).Value.ToString(),
-                            idUsuarioFinal = repositorio.modUsuario(dataRow.Cell(17).Value.ToString()).idUsuarioFinal,
-                            idDepartamento = repositorio.modDepartamento(dataRow.Cell(18).Value.ToString()).idDepartamento,
-                            problema = dataRow.Cell(19).Value.ToString(),
-                            parent = dataRow.Cell(20).Value.ToString(),
-                            causedByOrder = dataRow.Cell(21).Value.ToString(),
-                            idOrigem = repositorio.modOrigem(dataRow.Cell(22).Value.ToString()).idOrigem,
-                            ticketExterno = dataRow.Cell(23).Value.ToString(),
-                            dataReferencia = dataReferenciaSalva,
-                        };
+                            intSeveridade = repositorio.modSeveridade(dataRow.Cell(3).Value.ToString());
+                            mesVerifcAbertura = ajusteMes(verificaDateTime(dataRow.Cell(11).Value.ToString()).ToShortDateString());
+                            mesVerifcResolucao = ajusteMes(verificaDateTime(dataRow.Cell(15).Value.ToString()).ToShortDateString());
 
-                        listaParaAdcTabela.Add(infoAdd);
+                            #region Incidente
+                            Incidentes infoAdd = new Incidentes()
+                            {
+                                numeroIncidente = dataRow.Cell(1).Value.ToString(),
+                                resumo = dataRow.Cell(2).Value.ToString(),
+                                idSeveridade = intSeveridade.idSeveridade,
+                                idCategoria = repositorio.modCategoria(dataRow.Cell(4).Value.ToString()).idCategoria,
+                                idStatus = repositorio.modStatus(dataRow.Cell(5).Value.ToString()).idStatus,
+                                idGrupoExec = repositorio.modExecutor(dataRow.Cell(6).Value.ToString()).idGrupoExec,
+                                idResponsavel = repositorio.modResponsavel(dataRow.Cell(7).Value.ToString()).idResponsavel,
+                                violacao = verificaDateTime(dataRow.Cell(8).Value.ToString()),
+                                idViolado = repositorio.modViolado(dataRow.Cell(9).Value.ToString()).idViolado,
+                                idLocalidade = repositorio.modLocalidade(dataRow.Cell(10).Value.ToString()).idLocalidade,
+                                dataAbertura = verificaDateTime(dataRow.Cell(11).Value.ToString()),
+                                mesAbertura = mesVerifcAbertura,
+                                ultimaAtualizacao = verificaDateTime(dataRow.Cell(12).Value.ToString()),
+                                retornoChamado = dataRow.Cell(13).Value.ToString(),
+                                idClassChamadoFinal = repositorio.modClassificacaoChamado(dataRow.Cell(14).Value.ToString()).idClassChamadoFinal,
+                                dataResolucao = verificaDateTime(dataRow.Cell(15).Value.ToString()),
+                                mesResolucao = mesVerifcResolucao,
+                                descricao = dataRow.Cell(16).Value.ToString(),
+                                idUsuarioFinal = repositorio.modUsuario(dataRow.Cell(17).Value.ToString()).idUsuarioFinal,
+                                idDepartamento = repositorio.modDepartamento(dataRow.Cell(18).Value.ToString()).idDepartamento,
+                                problema = dataRow.Cell(19).Value.ToString(),
+                                parent = dataRow.Cell(20).Value.ToString(),
+                                causedByOrder = dataRow.Cell(21).Value.ToString(),
+                                idOrigem = repositorio.modOrigem(dataRow.Cell(22).Value.ToString()).idOrigem,
+                                ticketExterno = dataRow.Cell(23).Value.ToString(),
+                                dataReferencia = dataReferenciaSalva,
+                            };
+
+                            listaParaAdcTabelaIncidentes.Add(infoAdd);
+                            #endregion
+                        }
+                        else if (selecao == "2")
+                        {
+                            intSeveridade = repositorio.modSeveridade(dataRow.Cell(4).Value.ToString());
+                            mesVerifcAbertura = ajusteMes(verificaDateTime(dataRow.Cell(9).Value.ToString()).ToShortDateString());
+                            mesVerifcResolucao = ajusteMes(verificaDateTime(dataRow.Cell(14).Value.ToString()).ToShortDateString());
+                            mesVerifcFechamento = ajusteMes(verificaDateTime(dataRow.Cell(15).Value.ToString()).ToShortDateString());
+                            #region Problemas
+                            Problemas infoAdd = new Problemas()
+                            {
+                                numeroProblema = dataRow.Cell(1).Value.ToString(),
+                                idPrazo = repositorio.modPrazo(dataRow.Cell(2).Value.ToString()),
+                                resumo = dataRow.Cell(3).Value.ToString(),
+                                idPrioridade = intSeveridade.idSeveridade,
+                                idCategoria = repositorio.modCategoria(dataRow.Cell(5).Value.ToString()).idCategoria,
+                                idGrupoExec = repositorio.modExecutor(dataRow.Cell(6).Value.ToString()).idGrupoExec,
+                                idResponsavel = repositorio.modResponsavel(dataRow.Cell(7).Value.ToString()).idResponsavel,
+                                idStatus = repositorio.modStatus(dataRow.Cell(8).Value.ToString()).idStatus,
+                                dataAbertura = verificaDateTime(dataRow.Cell(9).Value.ToString()),
+                                mesAbertura = mesVerifcAbertura,
+                                idAtribuido = repositorio.modAtribuido(dataRow.Cell(10).Value.ToString()).idAtribuido,
+                                idUsuarioFinal = repositorio.modUsuario(dataRow.Cell(11).Value.ToString()).idUsuarioFinal,
+                                parent = dataRow.Cell(12).Value.ToString(),
+                                causedByOrder = dataRow.Cell(13).Value.ToString(),
+                                dataResolucao = verificaDateTime(dataRow.Cell(14).Value.ToString()),
+                                mesResolucao = mesVerifcResolucao,
+                                dataFechamento = verificaDateTime(dataRow.Cell(15).Value.ToString()),
+                                mesFechamento = mesVerifcFechamento,
+                                idDepartamento = repositorio.modDepartamento(dataRow.Cell(16).Value.ToString()).idDepartamento,
+                                dataReferencia = dataReferenciaSalva,
+                            };
+
+                            listaParaAdcTabelaProblemas.Add(infoAdd);
+                            #endregion
+                        }
+                        else if (selecao == "3")
+                        {
+                            intSeveridade = repositorio.modSeveridade(dataRow.Cell(3).Value.ToString());
+                            mesVerifcAbertura = ajusteMes(verificaDateTime(dataRow.Cell(11).Value.ToString()).ToShortDateString());
+                            mesVerifcResolucao = ajusteMes(verificaDateTime(dataRow.Cell(15).Value.ToString()).ToShortDateString());
+                            #region Solicitacoes
+                            Solicitacoes infoAdd = new Solicitacoes()
+                            {
+                                numeroSolicitacao = dataRow.Cell(1).Value.ToString(),
+                                resumo = dataRow.Cell(2).Value.ToString(),
+                                idSeveridade = intSeveridade.idSeveridade,
+                                idCategoria = repositorio.modCategoria(dataRow.Cell(4).Value.ToString()).idCategoria,
+                                idStatus = repositorio.modStatus(dataRow.Cell(5).Value.ToString()).idStatus,
+                                idGrupoExec = repositorio.modExecutor(dataRow.Cell(6).Value.ToString()).idGrupoExec,
+                                idResponsavel = repositorio.modResponsavel(dataRow.Cell(7).Value.ToString()).idResponsavel,
+                                violacao = verificaDateTime(dataRow.Cell(8).Value.ToString()),
+                                idViolado = repositorio.modViolado(dataRow.Cell(9).Value.ToString()).idViolado,
+                                idLocalidade = repositorio.modLocalidade(dataRow.Cell(10).Value.ToString()).idLocalidade,
+                                dataAbertura = verificaDateTime(dataRow.Cell(11).Value.ToString()),
+                                mesAbertura = mesVerifcAbertura,
+                                ultimaAtualizacao = verificaDateTime(dataRow.Cell(12).Value.ToString()),
+                                retornoChamado = dataRow.Cell(13).Value.ToString(),
+                                idClassChamadoFinal = repositorio.modClassificacaoChamado(dataRow.Cell(14).Value.ToString()).idClassChamadoFinal,
+                                dataResolucao = verificaDateTime(dataRow.Cell(15).Value.ToString()),
+                                mesResolucao = mesVerifcResolucao,
+                                descricao = dataRow.Cell(16).Value.ToString(),
+                                idUsuarioFinal = repositorio.modUsuario(dataRow.Cell(17).Value.ToString()).idUsuarioFinal,
+                                idDepartamento = repositorio.modDepartamento(dataRow.Cell(18).Value.ToString()).idDepartamento,
+                                parent = dataRow.Cell(19).Value.ToString(),
+                                causedByOrder = dataRow.Cell(20).Value.ToString(),
+                                idOrigem = repositorio.modOrigem(dataRow.Cell(21).Value.ToString()).idOrigem,
+                                ticketExterno = dataRow.Cell(22).Value.ToString(),
+                                dataReferencia = dataReferenciaSalva,
+                            };
+
+                            listaParaAdcTabelaSolicitacoes.Add(infoAdd);
+                            #endregion
+                        }
+                        else
+                        {
+                            Console.WriteLine("Ocorreu um erro! Dado inserido na seleção é incorreto");
+                            Console.WriteLine("Selecione novamente o tipo");
+                            lerArquivosExecucaoTotal();
+                        }
                     }
                 }
-                adicionarDadosTabela(listaParaAdcTabela);
-                listaParaAdcTabela = new List<Incidentes>();
+                if (selecao == "1")
+                {
+                    adicionarDadosTabelaIncidentes(listaParaAdcTabelaIncidentes);
+                    listaParaAdcTabelaIncidentes = new List<Incidentes>();
+                }
+                else if (selecao == "2")
+                {
+                    adicionarDadosTabelaProblemas(listaParaAdcTabelaProblemas);
+                    listaParaAdcTabelaProblemas = new List<Problemas>();
+                }
+                else if (selecao == "3")
+                {
+                    adicionarDadosTabelaSolicitacoes(listaParaAdcTabelaSolicitacoes);
+                    listaParaAdcTabelaSolicitacoes = new List<Solicitacoes>();
+                }
                 Console.WriteLine("Leitura do arquivo executada com sucesso, linhas e informações do arquivo salvas !");
             }
         }
@@ -126,9 +228,10 @@ namespace BotLeituraExcell.Setup
             }
         }
 
-        public List<Incidentes> lerArquivoUnico(FileInfo[] arquivo)
+        public List<Incidentes> lerArquivoUnicoIncidente(FileInfo[] arquivo)
         {
-            List<Incidentes> listaParaAdcTabela = new List<Incidentes>();
+            List<Incidentes> listaParaAdcTabelaIncidentes = new List<Incidentes>();
+
             Severidade intSeveridade = new Severidade();
             DateTime mesVerifcAbertura = new DateTime();
             DateTime mesVerifcResolucao = new DateTime();
@@ -176,35 +279,140 @@ namespace BotLeituraExcell.Setup
                         dataReferencia = dataReferenciaSalva,
                     };
 
-                    //InformacoesPlanilha infoAdd = new InformacoesPlanilha();
-                    //infoAdd.numeroIncidente = dataRow.Cell(1).Value.ToString();
-                    //infoAdd.resumo = dataRow.Cell(2).Value.ToString();
-                    //infoAdd.severidade = repositorio.modSeveridade(dataRow.Cell(3).Value.ToString());
-                    //infoAdd.categoria = repositorio.modCategoria(dataRow.Cell(4).Value.ToString());
-                    //infoAdd.status = repositorio.modStatus(dataRow.Cell(5).Value.ToString());
-                    //infoAdd.executor = repositorio.modExecutor(dataRow.Cell(6).Value.ToString());
-                    //infoAdd.responsavel = repositorio.modResponsavel(dataRow.Cell(7).Value.ToString());
-                    //infoAdd.violacao = verificaDateTime(dataRow.Cell(8).Value.ToString());
-                    //infoAdd.violado = repositorio.modViolado(dataRow.Cell(9).Value.ToString());
-                    //infoAdd.localidade = repositorio.modLocalidade(dataRow.Cell(10).Value.ToString());
-                    //infoAdd.dataAbertura = verificaDateTime(dataRow.Cell(11).Value.ToString());
-                    //infoAdd.ultimaAtualizacao = verificaDateTime(dataRow.Cell(12).Value.ToString());
-                    //infoAdd.retornoChamado = dataRow.Cell(13).Value.ToString();
-                    //infoAdd.classificacaoChamado = repositorio.modClassificacaoChamado(dataRow.Cell(14).Value.ToString());
-                    //infoAdd.dataResolucao = verificaDateTime(dataRow.Cell(15).Value.ToString());
-                    //infoAdd.descricao = dataRow.Cell(16).Value.ToString();
-                    //infoAdd.usuarioAfetado = repositorio.modUsuario(dataRow.Cell(17).Value.ToString());
-                    //infoAdd.departamento = repositorio.modDepartamento(dataRow.Cell(18).Value.ToString());
-                    //infoAdd.problema = dataRow.Cell(19).Value.ToString();
-                    //infoAdd.parent = dataRow.Cell(20).Value.ToString();
-                    //infoAdd.causedByOrder = dataRow.Cell(21).Value.ToString();
-                    //infoAdd.origem = repositorio.modOrigem(dataRow.Cell(22).Value.ToString());
-                    //infoAdd.ticketExterno = dataRow.Cell(23).Value.ToString();
-
-                    listaParaAdcTabela.Add(infoAdd);
+                    listaParaAdcTabelaIncidentes.Add(infoAdd);
                 }
             }
-            return listaParaAdcTabela;
+            return listaParaAdcTabelaIncidentes;
+        }
+
+        public List<Problemas> lerArquivoUnicoProblema(FileInfo[] arquivo)
+        {
+            List<Problemas> listaParaAdcTabelaProblemas = new List<Problemas>();
+
+            Severidade intSeveridade = new Severidade();
+            DateTime mesVerifcAbertura = new DateTime();
+            DateTime mesVerifcResolucao = new DateTime();
+            DateTime mesVerifcFechamento = new DateTime();
+            DateTime dataReferenciaSalva = dataReferenciaAjuste(arquivo[0].Name);
+            var workbook = new XLWorkbook(arquivo[0].FullName);
+            var ws1 = workbook.Worksheet(1);
+            var linhasNaoVazias = ws1.RowsUsed();
+            Console.WriteLine("O Arquivo " + arquivo[0].FullName);
+            Console.WriteLine("Possui o total de " + (linhasNaoVazias.Count() - 1) + " usadas");
+
+            foreach (var dataRow in linhasNaoVazias)
+            {
+                if (dataRow.RowNumber() > 1)
+                {
+                    intSeveridade = repositorio.modSeveridade(dataRow.Cell(4).Value.ToString());
+                    mesVerifcAbertura = ajusteMes(verificaDateTime(dataRow.Cell(9).Value.ToString()).ToShortDateString());
+                    mesVerifcResolucao = ajusteMes(verificaDateTime(dataRow.Cell(14).Value.ToString()).ToShortDateString());
+                    mesVerifcFechamento = ajusteMes(verificaDateTime(dataRow.Cell(15).Value.ToString()).ToShortDateString());
+                    Problemas infoAdd = new Problemas()
+                    {
+                        numeroProblema = dataRow.Cell(1).Value.ToString(),
+                        idPrazo = repositorio.modPrazo(dataRow.Cell(2).Value.ToString()),
+                        resumo = dataRow.Cell(3).Value.ToString(),
+                        idPrioridade = intSeveridade.idSeveridade,
+                        idCategoria = repositorio.modCategoria(dataRow.Cell(5).Value.ToString()).idCategoria,
+                        idGrupoExec = repositorio.modExecutor(dataRow.Cell(6).Value.ToString()).idGrupoExec,
+                        idResponsavel = repositorio.modResponsavel(dataRow.Cell(7).Value.ToString()).idResponsavel,
+                        idStatus = repositorio.modStatus(dataRow.Cell(8).Value.ToString()).idStatus,
+                        dataAbertura = verificaDateTime(dataRow.Cell(9).Value.ToString()),
+                        mesAbertura = mesVerifcAbertura,
+                        idAtribuido = repositorio.modResponsavel(dataRow.Cell(10).Value.ToString()).idResponsavel,
+                        idUsuarioFinal = repositorio.modUsuario(dataRow.Cell(11).Value.ToString()).idUsuarioFinal,
+                        parent = dataRow.Cell(12).Value.ToString(),
+                        causedByOrder = dataRow.Cell(13).Value.ToString(),
+                        dataResolucao = verificaDateTime(dataRow.Cell(14).Value.ToString()),
+                        mesResolucao = mesVerifcResolucao,
+                        dataFechamento = verificaDateTime(dataRow.Cell(15).Value.ToString()),
+                        mesFechamento = mesVerifcFechamento,
+                        idDepartamento = repositorio.modDepartamento(dataRow.Cell(16).Value.ToString()).idDepartamento,
+                        dataReferencia = dataReferenciaSalva,
+                    };
+
+                    listaParaAdcTabelaProblemas.Add(infoAdd);
+                }
+            }
+            return listaParaAdcTabelaProblemas;
+        }
+
+        public List<Solicitacoes> lerArquivoUnicoSolicitacoes(FileInfo[] arquivo)
+        {
+            List<Solicitacoes> listaParaAdcTabelaSolicitacoes = new List<Solicitacoes>();
+
+            Severidade intSeveridade = new Severidade();
+            DateTime mesVerifcAbertura = new DateTime();
+            DateTime mesVerifcResolucao = new DateTime();
+            DateTime dataReferenciaSalva = dataReferenciaAjuste(arquivo[0].Name);
+            var workbook = new XLWorkbook(arquivo[0].FullName);
+            var ws1 = workbook.Worksheet(1);
+            var linhasNaoVazias = ws1.RowsUsed();
+            Console.WriteLine("O Arquivo de Solicitações " + arquivo[0].FullName);
+            Console.WriteLine("Possui o total de " + (linhasNaoVazias.Count() - 1) + " usadas");
+
+            foreach (var dataRow in linhasNaoVazias)
+            {
+                if (dataRow.RowNumber() > 1)
+                {
+                    intSeveridade = repositorio.modSeveridade(dataRow.Cell(3).Value.ToString());
+                    mesVerifcAbertura = ajusteMes(verificaDateTime(dataRow.Cell(11).Value.ToString()).ToShortDateString());
+                    mesVerifcResolucao = ajusteMes(verificaDateTime(dataRow.Cell(15).Value.ToString()).ToShortDateString());
+                    Solicitacoes infoAdd = new Solicitacoes()
+                    {
+                        numeroSolicitacao = dataRow.Cell(1).Value.ToString(),
+                        resumo = dataRow.Cell(2).Value.ToString(),
+                        idSeveridade = intSeveridade.idSeveridade,
+                        idCategoria = repositorio.modCategoria(dataRow.Cell(4).Value.ToString()).idCategoria,
+                        idStatus = repositorio.modStatus(dataRow.Cell(5).Value.ToString()).idStatus,
+                        idGrupoExec = repositorio.modExecutor(dataRow.Cell(6).Value.ToString()).idGrupoExec,
+                        idResponsavel = repositorio.modResponsavel(dataRow.Cell(7).Value.ToString()).idResponsavel,
+                        violacao = verificaDateTime(dataRow.Cell(8).Value.ToString()),
+                        idViolado = repositorio.modViolado(dataRow.Cell(9).Value.ToString()).idViolado,
+                        idLocalidade = repositorio.modLocalidade(dataRow.Cell(10).Value.ToString()).idLocalidade,
+                        dataAbertura = verificaDateTime(dataRow.Cell(11).Value.ToString()),
+                        mesAbertura = mesVerifcAbertura,
+                        ultimaAtualizacao = verificaDateTime(dataRow.Cell(12).Value.ToString()),
+                        retornoChamado = dataRow.Cell(13).Value.ToString(),
+                        idClassChamadoFinal = repositorio.modClassificacaoChamado(dataRow.Cell(14).Value.ToString()).idClassChamadoFinal,
+                        dataResolucao = verificaDateTime(dataRow.Cell(15).Value.ToString()),
+                        mesResolucao = mesVerifcResolucao,
+                        descricao = dataRow.Cell(16).Value.ToString(),
+                        idUsuarioFinal = repositorio.modUsuario(dataRow.Cell(17).Value.ToString()).idUsuarioFinal,
+                        idDepartamento = repositorio.modDepartamento(dataRow.Cell(18).Value.ToString()).idDepartamento,
+                        parent = dataRow.Cell(19).Value.ToString(),
+                        causedByOrder = dataRow.Cell(20).Value.ToString(),
+                        idOrigem = repositorio.modOrigem(dataRow.Cell(21).Value.ToString()).idOrigem,
+                        ticketExterno = dataRow.Cell(22).Value.ToString(),
+                        dataReferencia = dataReferenciaSalva,
+                    };
+
+                    listaParaAdcTabelaSolicitacoes.Add(infoAdd);
+                }
+            }
+            return listaParaAdcTabelaSolicitacoes;
+        }
+
+        public string selecaoTipo()
+        {
+            Console.WriteLine("Deseja ler qual tipo de arquivo?");
+            Console.WriteLine("1 - Incidentes");
+            Console.WriteLine("2 - Problemas");
+            Console.WriteLine("3 - Solicitações");
+            Console.WriteLine("Digite o numero da opção e aperte ENTER");
+            string selecao = Console.ReadLine();
+
+            if (selecao == "1" || selecao == "2" || selecao == "3")
+            {
+                return selecao;
+            }
+            else
+            {
+                Console.WriteLine("Desculpe não foi inserido algo valido, irei refazer a pergunta");
+                selecao = "Erro";
+                return selecao;
+            }
         }
 
         public void selecaoDois()
@@ -232,27 +440,69 @@ namespace BotLeituraExcell.Setup
                 {
                     selecaoTres();
                 }
+                else
+                {
+                    Console.WriteLine("Desculpe não foi inserido algo valido, irei pedir para inserir uma nova data");
+                    selecaoDois();
+                }
             }
         }
 
         public void selecaoUm(DateTime data)
         {
-            List<Incidentes> listaParaAdcTabela = new List<Incidentes>();
+            Console.WriteLine("A data (" + data.ToShortDateString() +  ") já foi selecionada agora selecione o tipo");
+            string selecao = selecaoTipo();
+            string selecaoTipoStr = string.Empty;
+            List<Incidentes> listaParaAdcTabelaIncidentes = new List<Incidentes>();
+            List<Problemas> listaParaAdcTabelaProblemas = new List<Problemas>();
+            List<Solicitacoes> listaParaAdcTabelaSolicitacoes = new List<Solicitacoes>();
             string mesStr = string.Empty;
             string diaStr = string.Empty;
             string anoStr = string.Empty;
-
+            if (selecao == "1")
+            {
+                selecaoTipoStr = "Incidentes";
+            }
+            else if (selecao == "2")
+            {
+                selecaoTipoStr = "Problemas";
+            }
+            else if (selecao == "3")
+            {
+                selecaoTipoStr = "Solicitacoes";
+            }
+            else
+            {
+                Console.WriteLine("Dado inserido incorretamente, vamos novamente");
+                selecaoUm(data);
+            }
             mesStr = data.Month.ToString();
             anoStr = data.Year.ToString();
             diaStr = data.Day.ToString();
-            FileInfo[] arquivo = execute.verificarPastaParcial(diaStr, mesStr, anoStr);
+            FileInfo[] arquivo = execute.verificarPastaParcial(diaStr, mesStr, anoStr, selecaoTipoStr);
             if (arquivo.Count() == 0)
             {
                 buscaSemArquivos();
             }
-            listaParaAdcTabela = lerArquivoUnico(arquivo);
-            adicionarDadosTabela(listaParaAdcTabela);
-            Console.WriteLine("Leitura do arquivo executada com sucesso, linhas e informações do arquivo salvas !");
+            else
+            {
+                if (selecao == "1")
+                {
+                    listaParaAdcTabelaIncidentes = lerArquivoUnicoIncidente(arquivo);
+                    adicionarDadosTabelaIncidentes(listaParaAdcTabelaIncidentes);
+                }
+                else if (selecao == "2")
+                {
+                    listaParaAdcTabelaProblemas = lerArquivoUnicoProblema(arquivo);
+                    adicionarDadosTabelaProblemas(listaParaAdcTabelaProblemas);
+                }
+                else if (selecao == "3")
+                {
+                    listaParaAdcTabelaSolicitacoes = lerArquivoUnicoSolicitacoes(arquivo);
+                    adicionarDadosTabelaSolicitacoes(listaParaAdcTabelaSolicitacoes);
+                }
+                Console.WriteLine("Leitura do arquivo executada com sucesso, linhas e informações do arquivo salvas !");
+            }
         }
 
         public void selecaoTres()
@@ -276,6 +526,11 @@ namespace BotLeituraExcell.Setup
             {
                 selecaoTres();
             }
+            else
+            {
+                Console.WriteLine("Desculpe não foi inserido algo valido, ireirefazer a pergunta");
+                buscaSemArquivos();
+            }
         }
 
         public DateTime verificaDateTime(string data)
@@ -287,7 +542,9 @@ namespace BotLeituraExcell.Setup
                 data = null;
             }
 
-            return dataConvertida = Convert.ToDateTime(data);
+            dataConvertida = Convert.ToDateTime(data);
+
+            return dataConvertida;
         }
 
         public int verificarPeso(string severidade)
@@ -295,19 +552,23 @@ namespace BotLeituraExcell.Setup
             int peso = 0;
             if(severidade == "2")
             {
-                return peso = 1;
+                peso = 1;
+                return peso;
             }
             else if(severidade == "3")
             {
-                return peso = 3;
+                peso = 3;
+                return peso;
             }
             else if(severidade == "4")
             {
-                return peso = 5;
+                peso = 5;
+                return peso;
             }
             else if(severidade == "5")
             {
-                return peso = 20;
+                peso = 20;
+                return peso;
             }
             else
             {
@@ -331,11 +592,25 @@ namespace BotLeituraExcell.Setup
             return Convert.ToDateTime(dataInicial);
         }
 
-        public void adicionarDadosTabela(List<Incidentes> informacoesPlanilhas)
+        public void adicionarDadosTabelaIncidentes(List<Incidentes> informacoesPlanilhas)
         {
             AcessDBRepository acess = new AcessDBRepository();
 
-            acess.adcTabelaSqlComand(informacoesPlanilhas);
+            acess.adcTabelaIncidentesSqlComand(informacoesPlanilhas);
+        }
+
+        public void adicionarDadosTabelaProblemas(List<Problemas> informacoesPlanilhas)
+        {
+            AcessDBRepository acess = new AcessDBRepository();
+
+            acess.adcTabelaProblemasSqlComand(informacoesPlanilhas);
+        }
+
+        public void adicionarDadosTabelaSolicitacoes(List<Solicitacoes> informacoesPlanilhas)
+        {
+            AcessDBRepository acess = new AcessDBRepository();
+
+            acess.adcTabelaSolicitacoesSqlComand(informacoesPlanilhas);
         }
     }
 }

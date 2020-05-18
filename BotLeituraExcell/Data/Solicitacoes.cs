@@ -1,20 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BotLeituraExcell.Data
 {
-    [Table("Incidentes")]
-    public class Incidentes
+    [Table("Solicitacoes")]
+    public class Solicitacoes
     {
         [Key]
-        public int idInformacaoTabela { get; set; }
+        public int idSolicitacoes { get; set; }
 
-        public string numeroIncidente { get; set; }
+        public string numeroSolicitacao { get; set; }
 
         public string resumo { get; set; }
 
@@ -58,7 +58,7 @@ namespace BotLeituraExcell.Data
 
         #region Violado
         [ForeignKey("idViolado")]
-        public virtual Violado violado{ get; set; }
+        public virtual Violado violado { get; set; }
 
         public int idViolado { get; set; }
         #endregion
@@ -112,8 +112,6 @@ namespace BotLeituraExcell.Data
         public int idDepartamento { get; set; }
         #endregion
 
-        public string problema { get; set; }
-
         public string parent { get; set; }
 
         public string causedByOrder { get; set; }
@@ -135,3 +133,4 @@ namespace BotLeituraExcell.Data
         public DateTime dataRdm { get; set; }
     }
 }
+

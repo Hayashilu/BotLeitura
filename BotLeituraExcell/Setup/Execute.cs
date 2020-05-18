@@ -32,11 +32,25 @@ namespace BotLeituraExcell.Setup
             return caminho;
         }
 
-        public IEnumerable<FileInfo> verificarPastaTotal()
+        public IEnumerable<FileInfo> verificarPastaTotal(string selecao)
         {
+            string anoExec = ConfigurationManager.AppSettings["AnoPrimeiraExec"].ToString();
+            string selecaoTipoStr = string.Empty;
+            if (selecao == "1")
+            {
+                selecaoTipoStr = "Incidentes";
+            }
+            else if (selecao == "2")
+            {
+                selecaoTipoStr = "Problemas";
+            }
+            else if (selecao == "3")
+            {
+                selecaoTipoStr = "Solicitacoes";
+            }
             //Marca o diretório a ser listado
             string pasta = caminhoArquivos();
-            DirectoryInfo diretorio = new DirectoryInfo(pasta);
+            DirectoryInfo diretorio = new DirectoryInfo(pasta + "\\" + anoExec + "\\" +  selecaoTipoStr);
 
             //Pega todos os arquivos presentes em pastas do tipo excell 
             IEnumerable<FileInfo> files = diretorio.EnumerateFiles("*.xlsx", SearchOption.AllDirectories);
@@ -44,7 +58,7 @@ namespace BotLeituraExcell.Setup
             return files;
         }
 
-        public FileInfo[] verificarPastaParcial(string dia, string mes, string ano)
+        public FileInfo[] verificarPastaParcial(string dia, string mes, string ano, string selecaoTipo)
         {
             Meses meses = new Meses();
             string mesNome = meses.mesTransformacao(mes);
@@ -60,7 +74,7 @@ namespace BotLeituraExcell.Setup
 
             //Marca o diretório a ser listado
             string pasta = caminhoArquivos();
-            string caminhoArquivo = pasta + "\\" + ano + "\\"  + mesNome;
+            string caminhoArquivo = pasta + "\\"  + ano + "\\" + selecaoTipo +  "\\"  + mesNome;
             DirectoryInfo diretorio = new DirectoryInfo(caminhoArquivo);
 
             if (!diretorio.Exists)
