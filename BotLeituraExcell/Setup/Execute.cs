@@ -82,18 +82,38 @@ namespace BotLeituraExcell.Setup
                 Console.WriteLine("Diretorio da pasta referente ao mês informado não encontrado");
                 SelecaoCasoErro();
             }
-            //Pega todos os arquivos presentes em pastas do tipo excell 
+            //Pega todos os arquivos presentes em pastas do tipo excell xls e xlsx
             FileInfo[] file = diretorio.GetFiles(dia + ".xlsx");
+            if (file.Length == 0)
+            {
+                file = diretorio.GetFiles(dia + ".xlsx");
+            }
 
             if(file.Length == 0)
             {
-                file = diretorio.GetFiles(dia + "_" + mes + ".xlsx");
-                if(file.Length == 0)
+                file = diretorio.GetFiles(dia + "_" + mes + "_" + ano.Substring(2) + ".xls");
+                if (file.Length == 0)
+                {
+                    file = diretorio.GetFiles(dia + "_" + mes + "_" + ano.Substring(2) + ".xlsx");
+                }
+
+                if (file.Length == 0)
                 {
                     Console.WriteLine("Nenhum arquivo referente ao que foi informado, foi não encontrado");
                     SelecaoCasoErro();
                 }
             }
+
+            if(file.Length != 0)
+            {
+                if (file[0].FullName.Contains(".xls") && !file[0].FullName.Contains(".xlsx"))
+                {
+                    Console.WriteLine("Infelizmente este programa não lê arquivios do tipo .xls, por serem antigos");
+                    Console.WriteLine("Formate o arquivo e tente novamente");
+                    file = null;
+                }
+            }
+
             return file;
         }
 

@@ -480,7 +480,11 @@ namespace BotLeituraExcell.Setup
             anoStr = data.Year.ToString();
             diaStr = data.Day.ToString();
             FileInfo[] arquivo = execute.verificarPastaParcial(diaStr, mesStr, anoStr, selecaoTipoStr);
-            if (arquivo.Count() == 0)
+            if(arquivo == null)
+            {
+                arquivoNulo();
+            }
+            else if(arquivo.Count() == 0)
             {
                 buscaSemArquivos();
             }
@@ -503,6 +507,11 @@ namespace BotLeituraExcell.Setup
                 }
                 Console.WriteLine("Leitura do arquivo executada com sucesso, linhas e informações do arquivo salvas !");
             }
+        }
+
+        public void arquivoNulo()
+        {
+            buscaSemArquivos();
         }
 
         public void selecaoTres()
@@ -528,7 +537,7 @@ namespace BotLeituraExcell.Setup
             }
             else
             {
-                Console.WriteLine("Desculpe não foi inserido algo valido, ireirefazer a pergunta");
+                Console.WriteLine("Desculpe não foi inserido algo valido, irei refazer a pergunta");
                 buscaSemArquivos();
             }
         }
@@ -579,9 +588,8 @@ namespace BotLeituraExcell.Setup
         public DateTime dataReferenciaAjuste(string nomeArquivo)
         {
             string dataPrimeiroAjuste = nomeArquivo.Replace("_", "/");
-            string dataSegundoAjuste = dataPrimeiroAjuste.Replace(".xlsx", "");
-
-            DateTime dataReferencia = Convert.ToDateTime(dataSegundoAjuste);
+            string removerTipo = dataPrimeiroAjuste.Replace(".xlsx", "");
+            DateTime dataReferencia = Convert.ToDateTime(removerTipo);
 
             return dataReferencia;
         }

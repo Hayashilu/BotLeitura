@@ -14,12 +14,33 @@ namespace BotLeituraExcell.Acess
 
         public void adcTabelaIncidentesSqlComand(List<Incidentes> informacoesPlanilhas)
         {
+            List<Incidentes> listaParaAdc = new List<Incidentes>();
+
             using (var db = new InformacoesPlanilhaContext())
             {
                 //Remove itens que já existem de tal data
                 verificaExistenciaIncidenteDataReferencia(informacoesPlanilhas);
-                //Add novos itens
-                db.Incidentes.AddRange(informacoesPlanilhas);
+                //Add 500 itens por vez
+                int inicial = 0;
+                int final = 500;
+                int ultimo = 0;
+                int totalDeVezes = informacoesPlanilhas.Count / 500;
+                for (int i = 0; i <= totalDeVezes; i++)
+                {
+                    try
+                    {
+                        listaParaAdc = informacoesPlanilhas.GetRange(inicial, final);
+                        inicial = 500 * (i + 1);
+                    }
+                    catch
+                    {
+                        ultimo = informacoesPlanilhas.Count() - inicial - 1;
+                        listaParaAdc = informacoesPlanilhas.GetRange(inicial,ultimo);
+                    }
+
+                    db.Incidentes.AddRange(listaParaAdc);
+                }
+
                 Console.WriteLine("Foram adicionados o total de " + informacoesPlanilhas.Count() + " linhas na Tabela Incidentes");
                 db.SaveChanges();
             }
@@ -27,12 +48,33 @@ namespace BotLeituraExcell.Acess
 
         public void adcTabelaProblemasSqlComand(List<Problemas> informacoesPlanilhas)
         {
+            IEnumerable<Problemas> listaParaAdc = new List<Problemas>();
+
             using (var db = new InformacoesPlanilhaContext())
             {
                 //Remove itens que já existem de tal data
                 verificaExistenciaProblemaDataReferencia(informacoesPlanilhas);
-                //Add novos itens
-                db.Problemas.AddRange(informacoesPlanilhas);
+                //Add 500 itens por vez
+                int inicial = 0;
+                int final = 500;
+                int ultimo = 0;
+                int totalDeVezes = informacoesPlanilhas.Count / 500;
+                for (int i = 0; i <= totalDeVezes; i++)
+                {
+                    try
+                    {
+                        listaParaAdc = informacoesPlanilhas.GetRange(inicial, final);
+                        inicial = 500 * (i + 1);
+                    }
+                    catch
+                    {
+                        ultimo = informacoesPlanilhas.Count() - inicial - 1;
+                        listaParaAdc = informacoesPlanilhas.GetRange(inicial, ultimo);
+                    }
+
+                    db.Problemas.AddRange(listaParaAdc);
+                }
+
                 Console.WriteLine("Foram adicionados o total de " + informacoesPlanilhas.Count() + " linhas na Tabela Problemas");
                 db.SaveChanges();
             }
@@ -40,12 +82,33 @@ namespace BotLeituraExcell.Acess
 
         public void adcTabelaSolicitacoesSqlComand(List<Solicitacoes> informacoesPlanilhas)
         {
+            IEnumerable<Solicitacoes> listaParaAdc = new List<Solicitacoes>();
+
             using (var db = new InformacoesPlanilhaContext())
             {
                 //Remove itens que já existem de tal data
                 verificaExistenciaSolicitacaoDataReferencia(informacoesPlanilhas);
-                //Add novos itens
-                db.Solicitacoes.AddRange(informacoesPlanilhas);
+                //Add 500 itens por vez
+                int inicial = 0;
+                int final = 500;
+                int ultimo = 0;
+                int totalDeVezes = informacoesPlanilhas.Count / 500;
+                for (int i = 0; i <= totalDeVezes; i++)
+                {
+                    try
+                    {
+                        listaParaAdc = informacoesPlanilhas.GetRange(inicial, final);
+                        inicial = 500 * (i + 1);
+                    }
+                    catch
+                    {
+                        ultimo = informacoesPlanilhas.Count() - inicial - 1;
+                        listaParaAdc = informacoesPlanilhas.GetRange(inicial, ultimo);
+                    }
+
+                    db.Solicitacoes.AddRange(listaParaAdc);
+                }
+
                 Console.WriteLine("Foram adicionados o total de " + informacoesPlanilhas.Count() + " linhas na Tabela Solicitações");
                 db.SaveChanges();
             }
@@ -356,7 +419,7 @@ namespace BotLeituraExcell.Acess
                 if (busca.Count() != 0)
                 {
                     db.Configuration.ValidateOnSaveEnabled = false;
-                    foreach(var itemProblem in busca)
+                    foreach (var itemProblem in busca)
                     {
                         db.Problemas.Attach(itemProblem);
                         db.Entry(itemProblem).State = EntityState.Deleted;
