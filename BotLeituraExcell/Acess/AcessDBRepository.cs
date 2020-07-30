@@ -25,20 +25,24 @@ namespace BotLeituraExcell.Acess
                 int final = 500;
                 int ultimo = 0;
                 int totalDeVezes = informacoesPlanilhas.Count / 500;
+                int contagem = 0;
                 for (int i = 0; i <= totalDeVezes; i++)
                 {
                     try
                     {
                         listaParaAdc = informacoesPlanilhas.GetRange(inicial, final);
                         inicial = 500 * (i + 1);
+                        contagem = contagem + listaParaAdc.Count();
                     }
                     catch
                     {
-                        ultimo = informacoesPlanilhas.Count() - inicial - 1;
+                        ultimo = informacoesPlanilhas.Count() - inicial;
                         listaParaAdc = informacoesPlanilhas.GetRange(inicial,ultimo);
+                        contagem = contagem + listaParaAdc.Count();
                     }
 
                     db.Incidentes.AddRange(listaParaAdc);
+                    Console.WriteLine("Salvo até o momento " + contagem.ToString() + " linhas até o momento");
                 }
 
                 Console.WriteLine("Foram adicionados o total de " + informacoesPlanilhas.Count() + " linhas na Tabela Incidentes");
@@ -59,20 +63,24 @@ namespace BotLeituraExcell.Acess
                 int final = 500;
                 int ultimo = 0;
                 int totalDeVezes = informacoesPlanilhas.Count / 500;
+                int contagem = 0;
                 for (int i = 0; i <= totalDeVezes; i++)
                 {
                     try
                     {
                         listaParaAdc = informacoesPlanilhas.GetRange(inicial, final);
                         inicial = 500 * (i + 1);
+                        contagem = contagem + listaParaAdc.Count();
                     }
                     catch
                     {
-                        ultimo = informacoesPlanilhas.Count() - inicial - 1;
+                        ultimo = informacoesPlanilhas.Count() - inicial;
                         listaParaAdc = informacoesPlanilhas.GetRange(inicial, ultimo);
+                        contagem = contagem + listaParaAdc.Count();
                     }
 
                     db.Problemas.AddRange(listaParaAdc);
+                    Console.WriteLine("Salvo até o momento " + contagem.ToString() + " linhas até o momento");
                 }
 
                 Console.WriteLine("Foram adicionados o total de " + informacoesPlanilhas.Count() + " linhas na Tabela Problemas");
@@ -93,20 +101,24 @@ namespace BotLeituraExcell.Acess
                 int final = 500;
                 int ultimo = 0;
                 int totalDeVezes = informacoesPlanilhas.Count / 500;
+                int contagem = 0;
                 for (int i = 0; i <= totalDeVezes; i++)
                 {
                     try
                     {
                         listaParaAdc = informacoesPlanilhas.GetRange(inicial, final);
                         inicial = 500 * (i + 1);
+                        contagem = contagem + listaParaAdc.Count();
                     }
                     catch
                     {
-                        ultimo = informacoesPlanilhas.Count() - inicial - 1;
+                        ultimo = informacoesPlanilhas.Count() - inicial;
                         listaParaAdc = informacoesPlanilhas.GetRange(inicial, ultimo);
+                        contagem = contagem + listaParaAdc.Count();
                     }
 
                     db.Solicitacoes.AddRange(listaParaAdc);
+                    Console.WriteLine("Salvo até o momento " + contagem.ToString() + " linhas até o momento");
                 }
 
                 Console.WriteLine("Foram adicionados o total de " + informacoesPlanilhas.Count() + " linhas na Tabela Solicitações");
@@ -402,6 +414,7 @@ namespace BotLeituraExcell.Acess
                         db.Incidentes.Attach(itemIncidente);
                         db.Entry(itemIncidente).State = EntityState.Deleted;
                     }
+                    Console.WriteLine("Deletando registros já existentes, que batem com a data referencia ( " + dataReferencia + " selecionada");
                     db.SaveChanges();
 
                 }
@@ -424,6 +437,7 @@ namespace BotLeituraExcell.Acess
                         db.Problemas.Attach(itemProblem);
                         db.Entry(itemProblem).State = EntityState.Deleted;
                     }
+                    Console.WriteLine("Deletando registros já existentes, que batem com a data referencia ( " + dataReferencia + " selecionada");
                     db.SaveChanges();
                 }
             }
@@ -444,6 +458,7 @@ namespace BotLeituraExcell.Acess
                         db.Solicitacoes.Attach(itemSolicitacao);
                         db.Entry(itemSolicitacao).State = EntityState.Deleted;
                     }
+                    Console.WriteLine("Deletando registros já existentes, que batem com a data referencia ( " + dataReferencia + " selecionada");
                     db.SaveChanges();
                 }
             }
